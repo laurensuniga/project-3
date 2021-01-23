@@ -16,6 +16,13 @@ const userSchema = new Schema({
 }, { timestamps: true });
 
 
+userSchema.set('toJSON', {
+    transform: function(doc, ret) {
+        delete ret.password
+        return ret;
+    }
+})
+
 
 userSchema.pre('save', function(next) {
     const user = this;
@@ -27,6 +34,10 @@ userSchema.pre('save', function(next) {
     });
 });
 
+
+userSchema.methods.comparePassword = function(tryPassword, callback) {
+    bcrypt.compare(tryPassword, this.password, callback)
+}
 
 
 module.exports = mongoose.model('User', userSchema);
